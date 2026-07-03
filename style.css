@@ -1,0 +1,31 @@
+ :root{
+  --bg:#0b0c10;--card:#151821;--line:#2a3140;--txt:#f5f7fb;--muted:#a7b0c0;
+  --gold:#d8a733;--blue:#32d5ff;--ok:#48e07e;--warn:#ffb020;--bad:#ff5d5d
+}
+*{box-sizing:border-box}
+html{color-scheme:dark}
+body{margin:0;background:var(--bg);color:var(--txt);font-family:Arial,sans-serif}
+header{position:sticky;top:0;z-index:10;background:#111827;border-bottom:2px solid var(--gold);padding:12px}
+.brand{display:flex;align-items:center;gap:10px;max-width:950px;margin:auto}
+.brand img{width:44px;height:44px}.brand h1{font-size:1.2rem;margin:0;color:#ffdf7e}.brand p{margin:2px 0 0;color:var(--muted);font-size:.85rem}
+main{padding:12px;max-width:950px;margin:auto}
+.card{background:linear-gradient(180deg,var(--card),#10141d);border:1px solid var(--line);border-radius:14px;padding:12px;margin:12px 0}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.kpi{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px}
+.kpi div{background:#0f131b;border-radius:12px;padding:10px;text-align:center;border:1px solid var(--line)}
+.kpi b{display:block;font-size:1.15rem}.kpi span{color:var(--muted);font-size:.75rem}
+label{display:block;color:var(--muted);font-size:.82rem;margin-top:8px}
+input,select,textarea,button{width:100%;padding:12px;margin:5px 0;border-radius:10px;border:0;font-size:16px;font-family:inherit}
+input,select,textarea{background:#fff;color:#000}
+textarea{min-height:130px}
+button{background:var(--gold);font-weight:bold;color:#111}
+.secondary{background:#273142;color:white}.danger{background:#5b1f2a;color:white}
+.small{color:var(--muted)}.ok{color:var(--ok);font-weight:bold}.warn{color:var(--warn);font-weight:bold}.bad{color:var(--bad);font-weight:bold}
+.big{font-size:28px;font-weight:bold}.huge{font-size:38px;font-weight:bold}
+.progress{height:18px;background:#273142;border-radius:99px;overflow:hidden;margin-top:10px}
+#progressBar{height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--blue))}
+.next{border:2px solid var(--gold)}
+.hidden{display:none}
+.dot{display:inline-block;margin:2px 3px;font-size:22px}
+.checkrow{display:flex;gap:8px;align-items:center;margin:6px 0}.checkrow input{width:auto}
+@media(max-width:700px){.grid,.kpi{grid-template-columns:1fr}.huge{font-size:31px}}
