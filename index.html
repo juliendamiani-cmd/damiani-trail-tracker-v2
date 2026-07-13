@@ -1,144 +1,100 @@
 <!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Damiani Trail Tracker</title>
-  <meta name="theme-color" content="#d8a733">
-  <link rel="manifest" href="manifest.webmanifest">
-  <link rel="icon" href="icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="style.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Damiani Trail Tracker V25</title>
+<meta name="theme-color" content="#d8a733">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-<header>
-  <div class="brand">
-    <img src="icon.svg" alt="">
-    <div>
-      <h1>Damiani Trail Tracker</h1>
-      <p>Suivi de course secteur par secteur</p>
-    </div>
-  </div>
-</header>
-
+<header><div class="brand"><img src="icon.svg" alt=""><div><h1>Damiani Trail Tracker <span class="version">V25</span></h1><p>Course, stratégie et suivi des proches</p></div></div></header>
 <main>
-  <section class="card">
-    <h2>Course</h2>
-    <label>Choisir une course</label>
-    <select id="raceSelect"></select>
+<section id="homeHero" class="card hero-card">
+  <div class="hero-badge">UT4M 50 BELLEDONNE · 18 JUILLET 2026</div>
+  <h2>Qui utilise l’application ?</h2>
+  <div class="role-grid">
+    <button id="runnerHomeBtn" class="role-btn runner-role"><span>🏃</span><b>Je suis Julien</b><small>Course, pointages, état et stratégie</small></button>
+    <button id="familyHomeBtn" class="role-btn family-role"><span>❤️</span><b>Je suis un proche</b><small>Suivi, horaires estimés et contacts</small></button>
+  </div>
+</section>
 
-    <div class="grid">
-      <div>
-        <label>Heure de départ</label>
-        <input id="startTime" type="time">
-      </div>
-      <div>
-        <label>Objectif total</label>
-        <input id="goalTime" placeholder="08:15">
-      </div>
-    </div>
+<section id="familyDashboard" class="card family-dashboard hidden">
+  <div class="family-head">
+    <div><span class="eyebrow">MODE PROCHES</span><h2>Suivre Julien simplement</h2></div>
+    <button id="familyExitBtn" class="icon-btn" aria-label="Quitter le mode proches">✕</button>
+  </div>
+  <div id="familyStatusCard" class="family-status"></div>
+  <div class="family-actions">
+    <button id="officialTrackingBtn" class="family-primary">📍 Suivi officiel UT4M</button>
+    <button id="refreshFamilyBtn" class="secondary">↻ Actualiser les estimations</button>
+  </div>
+  <h3>⏱️ Horaires estimés</h3>
+  <div id="familyTimeline" class="family-timeline"></div>
+  <h3>👀 Où le voir ?</h3>
+  <div id="spectatorPoints" class="spectator-grid"></div>
+  <h3>📞 Contacts rapides</h3>
+  <div id="contactButtons" class="contact-grid"></div>
+  <details class="settings-box"><summary>Configurer les contacts et les liens</summary>
+    <label>Téléphone de Julien</label><input id="contactJulien" type="tel" placeholder="06…">
+    <label>Téléphone de Maroussia</label><input id="contactMaroussia" type="tel" placeholder="06…">
+    <label>Téléphone organisation UT4M</label><input id="contactUt4m" type="tel" placeholder="Numéro organisation">
+    <label>Lien du suivi officiel</label><input id="trackingUrl" type="url" placeholder="https://…">
+    <button id="saveFamilySettingsBtn">Enregistrer</button>
+  </details>
+  <div class="share-row"><button id="shareAppBtn" class="secondary">Partager l’application</button><button id="copyFamilySummaryBtn" class="secondary">Copier le résumé</button></div>
+</section>
 
-    <div class="kpi">
-      <div><b id="targetFinish">--:--</b><span>objectif</span></div>
-      <div><b id="projectedFinish">--:--</b><span>projection</span></div>
-      <div><b id="raceStatus">--</b><span>statut</span></div>
-    </div>
+<section class="card">
+<h2>Course</h2>
+<label>Choisir une course</label><select id="raceSelect"></select>
+<div class="grid"><div><label>Heure de départ</label><input id="startTime" type="time"></div><div><label>Objectif total</label><input id="goalTime" placeholder="08:15"></div></div>
+<div class="kpi"><div><b id="targetFinish">--</b><span>objectif</span></div><div><b id="projectedFinish">--</b><span>projection</span></div><div><b id="raceStatus">--</b><span>statut</span></div></div>
+<div class="progress"><div id="progressBar"></div></div><p id="progressText" class="small"></p><p id="routeNotice" class="warn hidden"></p>
+<button id="raceModeBtn">🏃 Mode course</button><button id="closeModeBtn" class="secondary">📣 Partager mon état</button><button id="editorBtn" class="secondary">Créer / modifier une course</button><button id="restoreBtn" class="secondary">Restaurer UT4M Belledonne</button><button id="resetBtn" class="danger">Effacer les pointages</button>
+</section>
 
-    <div class="kpi">
-      <div><b id="remainingKm">--</b><span>km restants</span></div>
-      <div><b id="remainingDp">--</b><span>D+ restant</span></div>
-      <div><b id="remainingTime">--</b><span>temps estimé</span></div>
-    </div>
+<section class="card"><h2>Tableau de bord progression</h2>
+<div class="kpi"><div><b id="progressPercent">--</b><span>progression</span></div><div><b id="remainingKm">--</b><span>km restants</span></div><div><b id="remainingTime">--</b><span>temps restant</span></div></div>
+<div class="kpi"><div><b id="doneDp">--</b><span>D+ fait</span></div><div><b id="remainingDp">--</b><span>D+ restant</span></div><div><b id="remainingDm">--</b><span>D- restant</span></div></div>
+<p id="securityLevel"></p></section>
 
-    <div class="progress"><div id="progressBar"></div></div>
-    <p id="progressText" class="small"></p>
+<section class="card mission"><h2>🎯 Mission actuelle</h2><div id="missionTitle" class="big"></div>
+<div class="grid"><p><b id="missionDistance">--</b><br><span class="small">distance secteur</span></p><p><b id="missionElevation">--</b><br><span class="small">D+ / D- secteur</span></p></div>
+<p id="missionTime" class="huge"></p><p id="missionAdvice" class="small"></p></section>
 
-    <button id="raceModeBtn">Mode course</button>
-    <button id="shareBtn" class="secondary">Partager état course</button>
-    <button id="editorBtn" class="secondary">Créer / modifier une course</button>
-    <button id="restoreBtn" class="secondary">Restaurer UT4M Belledonne</button>
-    <button id="resetBtn" class="danger">Effacer les pointages</button>
-  </section>
+<section id="raceMode" class="card hidden"><h2>⚔️ Mode course</h2><div id="currentSector" class="big"></div><p id="currentInfos"></p><p id="currentTarget" class="huge"></p><p id="currentBarrier"></p><p id="currentMargin"></p><p id="currentNutrition" class="small"></p><button id="pointNextBtn">Je viens d'arriver</button><button id="hardBtn" class="secondary">Je suis dans le dur</button><p id="hardAdvice" class="bad hidden"></p><button id="closeRaceModeBtn" class="secondary">Retour complet</button></section>
 
-  <section id="raceMode" class="card hidden">
-    <h2>⚔️ Mode course</h2>
-    <div id="currentSector" class="big"></div>
-    <p id="currentInfos"></p>
-    <p id="currentTarget" class="huge"></p>
-    <p id="currentBarrier"></p>
-    <p id="currentMargin"></p>
-    <p id="currentNutrition" class="small"></p>
-    <button id="pointNextBtn">Je viens d'arriver</button>
-    <button id="hardBtn" class="secondary">Je suis dans le dur</button>
-    <p id="hardAdvice" class="bad hidden"></p>
-    <button id="closeRaceModeBtn" class="secondary">Retour complet</button>
-  </section>
+<section class="card"><h2>Frise de course</h2><div id="mentalMap"></div></section>
 
-  <section class="card">
-    <h2>Carte mentale</h2>
-    <div id="mentalMap"></div>
-  </section>
+<section id="closeMode" class="card hidden"><h2>📣 Partager mon état aux proches</h2>
+<label>Mon état</label><select id="closeState"><option value="excellent">😊 Excellente forme</option><option value="good">🙂 Tout va bien</option><option value="hard">😐 Ça devient difficile</option><option value="low">😓 Coup de moins bien</option><option value="veryhard">🥵 Très difficile</option><option value="help">🆘 Besoin d'aide</option></select>
+<label>Ce que je ressens</label><div class="checkGrid" id="closeIssues">
+<label><input type="checkbox" value="fatigue"> Fatigue</label><label><input type="checkbox" value="chaleur"> Chaleur</label><label><input type="checkbox" value="crampes"> Crampes</label><label><input type="checkbox" value="estomac"> Estomac</label><label><input type="checkbox" value="jambes"> Jambes lourdes</label><label><input type="checkbox" value="moral"> Moral</label><label><input type="checkbox" value="eau"> Plus d'eau</label><label><input type="checkbox" value="nourriture"> Plus de nourriture</label><label><input type="checkbox" value="chute"> Petite chute</label><label><input type="checkbox" value="douleur"> Douleur</label>
+</div>
+<label>Message libre</label><textarea id="closeFreeMessage" placeholder="Optionnel"></textarea>
+<button id="generateCloseBtn">Générer / partager</button><button id="encouragementBtn" class="secondary">Demander des encouragements</button>
+<textarea id="closeMessage"></textarea><div id="closeHistory" class="small"></div></section>
 
-  <section class="card">
-    <h2>État du moment</h2>
-    <div class="grid">
-      <div><label>Énergie /5</label><input id="energy" type="number" min="1" max="5" value="4"></div>
-      <div><label>Moral /5</label><input id="moral" type="number" min="1" max="5" value="4"></div>
-    </div>
-    <label>Hydratation</label>
-    <select id="hydration"><option>OK</option><option>Moyen</option><option>Mauvais</option></select>
-    <label>Nutrition</label>
-    <select id="nutrition"><option>OK</option><option>Moyen</option><option>Mauvais</option></select>
-    <button id="saveStateBtn">Enregistrer l'état</button>
-    <div id="stateAlert"></div>
-    <div id="stateHistory" class="small"></div>
-  </section>
+<section class="card"><h2>État du moment</h2><div class="grid"><div><label>Énergie /5</label><input id="energy" type="number" min="1" max="5" value="4"></div><div><label>Moral /5</label><input id="moral" type="number" min="1" max="5" value="4"></div></div>
+<label>Hydratation</label><select id="hydration"><option>OK</option><option>Moyen</option><option>Mauvais</option></select><label>Nutrition</label><select id="nutrition"><option>OK</option><option>Moyen</option><option>Mauvais</option></select><button id="saveStateBtn">Enregistrer l'état</button><div id="stateAlert"></div><div id="stateHistory" class="small"></div></section>
 
-  <section class="card">
-    <h2>Checklist matériel</h2>
-    <div id="checklist"></div>
-    <button id="resetChecklistBtn" class="secondary">Réinitialiser checklist</button>
-  </section>
 
-  <section id="editor" class="card hidden">
-    <h2>Créer / modifier une course</h2>
-    <label>Nom de la course</label>
-    <input id="editName">
+<section id="editor" class="card hidden"><h2>Créer / modifier une course</h2><label>Nom de la course</label><input id="editName"><p class="small">Format : nom;km cumulés;D+ cumulé;D- cumulé;barrière;nutrition;poids projection</p><textarea id="editData"></textarea><button id="saveRaceBtn">Sauvegarder cette course</button><button id="duplicateBtn" class="secondary">Dupliquer la course active</button><button id="deleteBtn" class="danger">Supprimer la course active</button><label>Exporter / importer</label><textarea id="importExport"></textarea><button id="exportBtn" class="secondary">Exporter mes courses</button><button id="importBtn" class="secondary">Importer</button></section>
 
-    <p class="small">Format : nom;km cumulés;D+ cumulé;D- cumulé;barrière;nutrition;poids projection</p>
-    <textarea id="editData"></textarea>
+<section id="sectors"></section>
 
-    <button id="saveRaceBtn">Sauvegarder cette course</button>
-    <button id="duplicateBtn" class="secondary">Dupliquer la course active</button>
-    <button id="deleteBtn" class="danger">Supprimer la course active</button>
+<section class="card"><h2>Garmin / Strava / GPX</h2><label>Lien activité Garmin ou Strava</label><input id="activityLink" placeholder="Colle le lien après course"><label>Importer un fichier GPX</label><input id="gpxFile" type="file" accept=".gpx"><div id="gpxResult" class="small"></div></section>
 
-    <label>Exporter / importer</label>
-    <textarea id="importExport"></textarea>
-    <button id="exportBtn" class="secondary">Exporter mes courses</button>
-    <button id="importBtn" class="secondary">Importer</button>
-  </section>
-
-  <section id="sectors"></section>
-
-  <section class="card">
-    <h2>Garmin / Strava / GPX</h2>
-    <label>Lien activité Garmin ou Strava</label>
-    <input id="activityLink" placeholder="Colle le lien après course">
-    <label>Importer un fichier GPX</label>
-    <input id="gpxFile" type="file" accept=".gpx">
-    <div id="gpxResult" class="small"></div>
-  </section>
-
-  <section class="card">
-    <h2>Journal post-course</h2>
-    <label>Temps final</label><input id="jTime">
-    <label>Classement / remarque</label><input id="jScore">
-    <label>Ce qui a bien marché</label><textarea id="jGood"></textarea>
-    <label>À corriger</label><textarea id="jImprove"></textarea>
-    <button id="copyJournalBtn">Copier le bilan</button>
-    <button id="copyFullBtn" class="secondary">Copier bilan complet</button>
-  </section>
+<section class="card"><h2>Journal post-course</h2><label>Temps final</label><input id="jTime"><label>Classement / remarque</label><input id="jScore"><label>Ce qui a bien marché</label><textarea id="jGood"></textarea><label>À corriger</label><textarea id="jImprove"></textarea><button id="copyJournalBtn">Copier le bilan</button><button id="copyFullBtn" class="secondary">Copier bilan complet</button></section>
 </main>
-
-<script src="script.js"></script>
-</body>
-</html>
+<button id="floatingFamilyBtn" class="floating-family" aria-label="Ouvrir le mode proches">❤️<span>PROCHES</span></button>
+<div id="roleModal" class="modal hidden" role="dialog" aria-modal="true">
+ <div class="modal-card"><div class="hero-badge">BIENVENUE</div><h2>Je suis…</h2>
+ <button id="chooseRunnerBtn" class="role-btn runner-role"><span>🏃</span><b>Julien, le coureur</b><small>Accéder au tableau de bord complet</small></button>
+ <button id="chooseFamilyBtn" class="role-btn family-role"><span>❤️</span><b>Un proche</b><small>Accéder directement au suivi simplifié</small></button>
+ </div>
+</div>
+<script src="script.js"></script></body></html>
