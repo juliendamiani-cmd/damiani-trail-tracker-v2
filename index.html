@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Damiani Trail Tracker V25</title>
+<title>Damiani Trail Tracker V26</title>
 <meta name="theme-color" content="#d8a733">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<header><div class="brand"><img src="icon.svg" alt=""><div><h1>Damiani Trail Tracker <span class="version">V25</span></h1><p>Course, stratégie et suivi des proches</p></div></div></header>
+<header><div class="brand"><img src="icon.svg" alt=""><div><h1>Damiani Trail Tracker <span class="version">V26</span></h1><p>Course, stratégie et suivi des proches</p></div></div></header>
 <main>
 <section id="homeHero" class="card hero-card">
   <div class="hero-badge">UT4M 50 BELLEDONNE · 18 JUILLET 2026</div>
@@ -27,6 +27,9 @@
     <button id="familyExitBtn" class="icon-btn" aria-label="Quitter le mode proches">✕</button>
   </div>
   <div id="familyStatusCard" class="family-status"></div>
+  <h3>Dernières nouvelles de Julien</h3>
+  <div id="familyHealthUpdate" class="family-health-update"></div>
+  <details id="familyHealthHistoryBox" class="settings-box"><summary>Voir les mises à jour précédentes</summary><div id="familyHealthHistory"></div></details>
   <div class="family-actions">
     <button id="officialTrackingBtn" class="family-primary">📍 Suivi officiel UT4M</button>
     <button id="refreshFamilyBtn" class="secondary">↻ Actualiser les estimations</button>
@@ -69,14 +72,33 @@
 
 <section class="card"><h2>Frise de course</h2><div id="mentalMap"></div></section>
 
-<section id="closeMode" class="card hidden"><h2>📣 Partager mon état aux proches</h2>
-<label>Mon état</label><select id="closeState"><option value="excellent">😊 Excellente forme</option><option value="good">🙂 Tout va bien</option><option value="hard">😐 Ça devient difficile</option><option value="low">😓 Coup de moins bien</option><option value="veryhard">🥵 Très difficile</option><option value="help">🆘 Besoin d'aide</option></select>
-<label>Ce que je ressens</label><div class="checkGrid" id="closeIssues">
-<label><input type="checkbox" value="fatigue"> Fatigue</label><label><input type="checkbox" value="chaleur"> Chaleur</label><label><input type="checkbox" value="crampes"> Crampes</label><label><input type="checkbox" value="estomac"> Estomac</label><label><input type="checkbox" value="jambes"> Jambes lourdes</label><label><input type="checkbox" value="moral"> Moral</label><label><input type="checkbox" value="eau"> Plus d'eau</label><label><input type="checkbox" value="nourriture"> Plus de nourriture</label><label><input type="checkbox" value="chute"> Petite chute</label><label><input type="checkbox" value="douleur"> Douleur</label>
-</div>
-<label>Message libre</label><textarea id="closeFreeMessage" placeholder="Optionnel"></textarea>
-<button id="generateCloseBtn">Générer / partager</button><button id="encouragementBtn" class="secondary">Demander des encouragements</button>
-<textarea id="closeMessage"></textarea><div id="closeHistory" class="small"></div></section>
+<section id="closeMode" class="card hidden"><h2>Faire un point pour mes proches</h2>
+<p class="small">Choisis une réponse dans chaque rubrique. L’application transforme tes choix en un message simple, écrit à la première personne.</p>
+<div class="status-form">
+<fieldset><legend>Physique</legend><div class="choice-grid">
+<label><input type="radio" name="physical" value="verygood" checked> Très bien</label><label><input type="radio" name="physical" value="good"> Bien</label><label><input type="radio" name="physical" value="correct"> Correct</label><label><input type="radio" name="physical" value="hard"> Difficile</label><label><input type="radio" name="physical" value="veryhard"> Très difficile</label>
+</div></fieldset>
+<fieldset><legend>Mental</legend><div class="choice-grid">
+<label><input type="radio" name="mental" value="motivated" checked> Très motivé</label><label><input type="radio" name="mental" value="focused"> Concentré</label><label><input type="radio" name="mental" value="confident"> Fatigué mais confiant</label><label><input type="radio" name="mental" value="low"> Coup de moins bien</label><label><input type="radio" name="mental" value="holding"> Je m’accroche</label>
+</div></fieldset>
+<fieldset><legend>Estomac</legend><div class="choice-grid">
+<label><input type="radio" name="stomach" value="normal" checked> Je mange normalement</label><label><input type="radio" name="stomach" value="less"> J’ai moins faim</label><label><input type="radio" name="stomach" value="nausea"> Quelques nausées</label><label><input type="radio" name="stomach" value="blocked"> Je ne peux plus manger</label>
+</div></fieldset>
+<fieldset><legend>Hydratation</legend><div class="choice-grid">
+<label><input type="radio" name="hydrationClose" value="ok" checked> Tout va bien</label><label><input type="radio" name="hydrationClose" value="hot"> Il fait très chaud</label><label><input type="radio" name="hydrationClose" value="low"> Je manque d’eau</label><label><input type="radio" name="hydrationClose" value="difficult"> Je suis en difficulté</label>
+</div></fieldset>
+<fieldset><legend>Jambes</legend><div class="choice-grid">
+<label><input type="radio" name="legs" value="excellent" checked> Excellentes</label><label><input type="radio" name="legs" value="good"> Bonnes</label><label><input type="radio" name="legs" value="heavy"> Lourdes</label><label><input type="radio" name="legs" value="cramps"> Crampes</label><label><input type="radio" name="legs" value="painful"> Très douloureuses</label>
+</div></fieldset>
+<fieldset><legend>Message aux proches</legend><div class="choice-grid">
+<label><input type="radio" name="closePersonal" value="none" checked> Aucun message</label><label><input type="radio" name="closePersonal" value="allgood"> Tout va bien.</label><label><input type="radio" name="closePersonal" value="enjoy"> Je profite.</label><label><input type="radio" name="closePersonal" value="dontworry"> Ne vous inquiétez pas.</label><label><input type="radio" name="closePersonal" value="thinking"> Je pense à vous.</label><label><input type="radio" name="closePersonal" value="suffering"> J’en bave.</label><label><input type="radio" name="closePersonal" value="encourage"> J’ai besoin d’encouragements.</label>
+</div></fieldset>
+<label>Ajouter une phrase personnelle (facultatif)</label><textarea id="closeFreeMessage" placeholder="Une phrase courte, si besoin"></textarea>
+<button id="generateCloseBtn">Mettre à jour mon état</button>
+<label>Résumé généré</label><textarea id="closeMessage" readonly></textarea>
+<button id="shareCloseBtn" class="secondary">Partager ce résumé</button>
+<div id="closeHistory" class="small"></div>
+</div></section>
 
 <section class="card"><h2>État du moment</h2><div class="grid"><div><label>Énergie /5</label><input id="energy" type="number" min="1" max="5" value="4"></div><div><label>Moral /5</label><input id="moral" type="number" min="1" max="5" value="4"></div></div>
 <label>Hydratation</label><select id="hydration"><option>OK</option><option>Moyen</option><option>Mauvais</option></select><label>Nutrition</label><select id="nutrition"><option>OK</option><option>Moyen</option><option>Mauvais</option></select><button id="saveStateBtn">Enregistrer l'état</button><div id="stateAlert"></div><div id="stateHistory" class="small"></div></section>
