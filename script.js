@@ -335,12 +335,32 @@ function v351UpdateRaceSync(){const el=$("raceCockpitSync");if(!el)return;const 
 window.addEventListener("online",v351UpdateRaceSync);window.addEventListener("offline",v351UpdateRaceSync);setInterval(v351UpdateRaceSync,5000);v351UpdateRaceSync();
 
 // V35.2 · sortie de secours toujours accessible depuis le mode Course
-function v352ExitRaceMode(){
+function v353ExitRaceMode(){
   const locked=localStorage.getItem(V35_LOCK_KEY)==="1";
   if(locked&&!confirm("Déverrouiller le mode course et revenir au tableau complet ?"))return;
-  if(locked)v35SetLocked(false);
+
+  // Supprime le verrou de façon explicite, même si l’état visuel et le stockage sont désynchronisés.
+  localStorage.setItem(V35_LOCK_KEY,"0");
+  document.body.classList.remove("race-locked","family-only-mode");
+  document.body.classList.add("runner-only-mode");
+
+  // Ferme tous les écrans secondaires et restaure le tableau coureur principal.
   $("raceMode")?.classList.add("hidden");
-  window.scrollTo({top:0,behavior:"smooth"});
+  $("closeMode")?.classList.add("hidden");
+  $("editor")?.classList.add("hidden");
+  $("familyDashboard")?.classList.add("hidden");
+
+  const lockButton=$("raceLockBtn");
+  if(lockButton)lockButton.textContent="🔒 Verrouiller le mode course";
+  const backButton=$("closeRaceModeBtn");
+  if(backButton)backButton.textContent="← Retour au tableau complet";
+
+  render();
+  v35Toast("🔓 Mode course déverrouillé · tableau complet restauré.");
+  window.scrollTo({top:0,behavior:"auto"});
 }
-const v352BackButton=$("closeRaceModeBtn");
-if(v352BackButton)v352BackButton.onclick=v352ExitRaceMode;
+const v353BackButton=$("closeRaceModeBtn");
+if(v353BackButton){
+  v353BackButton.onclick=null;
+  v353BackButton.addEventListener("click",v353ExitRaceMode);
+}
