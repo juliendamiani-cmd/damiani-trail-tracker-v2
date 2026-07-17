@@ -1,4 +1,4 @@
-DAMIANI TRAIL TRACKER V31 — SUIVI EN DIRECT CONFIGURÉ
+DAMIANI TRAIL TRACKER V32 — SUIVI EN DIRECT CONFIGURÉ
 
 La base Firebase du projet Damiani Trail Tracker est déjà renseignée dans cette version.
 Code de suivi : JULIEN-UT4M-50B-2026
@@ -20,3 +20,14 @@ Le bouton « Réinitialiser la course » efface les pointages, la position manue
 
 SÉCURITÉ
 Les règles actuelles autorisent publiquement la lecture et l’écriture. Après la course, repasser les règles Firebase à false ou mettre en place une authentification.
+
+
+MESSAGERIE V32
+- Les proches peuvent saisir leur prénom et envoyer un message de 300 caractères maximum.
+- Les messages sont enregistrés dans Firebase sous le code de suivi de la course.
+- Julien les reçoit automatiquement lorsque l’application a accès à Internet.
+- Le bouton « Marquer comme lus » retire le compteur de nouveaux messages sur son appareil.
+- La réinitialisation complète de la course supprime aussi les messages enregistrés pour cette course.
+
+IMPORTANT
+Les règles actuelles autorisent publiquement la lecture et l’écriture. Ne partagez le lien de suivi qu’avec des personnes de confiance. Après la course, désactivez les règles publiques ou supprimez la base.
