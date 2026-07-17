@@ -1,31 +1,22 @@
-DAMIANI TRAIL TRACKER V30 — ACTIVER LE SUIVI EN DIRECT
+DAMIANI TRAIL TRACKER V31 — SUIVI EN DIRECT CONFIGURÉ
 
-La V30 utilise Firebase Realtime Database. Sans base Firebase configurée, l'application continue à fonctionner normalement en local.
+La base Firebase du projet Damiani Trail Tracker est déjà renseignée dans cette version.
+Code de suivi : JULIEN-UT4M-50B-2026
 
-1. Créer gratuitement un projet sur Firebase.
-2. Ouvrir « Realtime Database » puis créer une base.
-3. Pour un usage ponctuel pendant la course, utiliser ces règles temporaires :
+UTILISATION COUREUR
+1. Ouvrir l’application avec une connexion internet.
+2. Choisir « Julien, le coureur ».
+3. Modifier le kilométrage ou enregistrer un pointage.
+4. La position est envoyée automatiquement à Firebase.
+5. Utiliser « Partager le lien proches » pour envoyer le lien de suivi.
 
-{
-  "rules": {
-    "damianiTrailTracker": {
-      "$room": {
-        ".read": true,
-        ".write": true
-      }
-    }
-  }
-}
+UTILISATION PROCHES
+1. Ouvrir le lien reçu.
+2. Le mode Proches s’ouvre automatiquement.
+3. Le profil et la position se mettent à jour environ toutes les 5 secondes.
 
-4. Copier l'adresse de la base, par exemple :
-https://nom-du-projet-default-rtdb.europe-west1.firebasedatabase.app
+RÉINITIALISATION
+Le bouton « Réinitialiser la course » efface les pointages, la position manuelle et les anciennes informations d’état, puis publie cet effacement dans Firebase afin que les proches voient eux aussi une course réinitialisée.
 
-5. Dans l'application, ouvrir « Configurer la synchronisation ».
-6. Coller l'adresse Firebase et choisir un code long et difficile à deviner.
-7. Appuyer sur « Activer la synchronisation » puis « Partager le lien proches ».
-8. Les proches ouvrent simplement ce lien. Leur écran s'actualise environ toutes les 5 secondes.
-
-IMPORTANT
-- Les règles ci-dessus sont simples mais publiques. Utiliser un code de suivi long et unique.
-- Après la course, désactiver la base ou remplacer les règles par ".read": false et ".write": false.
-- L'application publie uniquement les données de course : kilométrage, pointages, messages d'état, horaires et lien LiveTrail.
+SÉCURITÉ
+Les règles actuelles autorisent publiquement la lecture et l’écriture. Après la course, repasser les règles Firebase à false ou mettre en place une authentification.

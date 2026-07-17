@@ -1,4 +1,4 @@
-const COURSE_DATA_VERSION="2026-07-17-route-v4-manual-position";
+const COURSE_DATA_VERSION="2026-07-17-route-v5-firebase-live";
 const defaultRace={name:"UT4M 50 Belledonne",start:"08:00",goal:"08:15",version:COURSE_DATA_VERSION,notice:"Parcours modifié : passage par le col de Freydane supprimé en raison de névés persistants.",points:[{name:"Départ Rioupéroux",km:0,dp:0,dm:0,bh:"",w:0,nut:"Départ très calme. Bâtons prêts, manger et boire dès la première demi-heure."},{name:"Arselle",km:8.3,dp:1190,dm:105,bh:"11:30",w:0.225,nut:"Boire tôt. Gérer la montée sans ego et repartir sans perdre de temps."},{name:"Croix de Chamrousse",km:14.0,dp:1813,dm:117,bh:"13:15",w:0.405,nut:"Vrai ravitaillement : refaire les flasques et emporter assez de solide jusqu'à Pré Long."},{name:"Refuge de la Pra",km:20.6,dp:2150,dm:590,bh:"15:00",w:0.565,nut:"Point d’eau uniquement. Continuer à s’alimenter avec ce qui a été pris à Chamrousse."},{name:"Col de Pré Long",km:32.1,dp:2679,dm:2045,bh:"18:30",w:0.79,nut:"Secteur clé raccourci mais toujours exigeant. Manger même sans faim et protéger les quadriceps."},{name:"Villard-Bonnot",km:40.1,dp:2741,dm:3039,bh:"20:00",w:0.96,nut:"Fin de la longue descente. Relancer progressivement vers Le Versoud."},{name:"Arrivée Le Versoud",km:41.5,dp:2741,dm:3065,bh:"21:00",w:1,nut:"Dernier effort sur 1,4 km. Rester lucide jusqu’à l’arche."}]};
 let races=JSON.parse(localStorage.getItem("trail_races")||"null")||[defaultRace],active=Number(localStorage.getItem("trail_active")||0);
 // Mise à niveau automatique de l'ancien tracé UT4M, sans toucher aux autres courses créées.
@@ -160,10 +160,12 @@ const originalRenderV25=render;render=function(){originalRenderV25();renderFamil
 initFamilyMode();renderAllProfiles();
 
 // ===== V30 · synchronisation Firebase Realtime Database =====
-const SYNC_SETTINGS_KEY="dtt_sync_settings_v30";
+const SYNC_SETTINGS_KEY="dtt_sync_settings_v31";
+const DEFAULT_FIREBASE_URL="https://damiani-trail-tracker-default-rtdb.europe-west1.firebasedatabase.app";
+const DEFAULT_SYNC_KEY="JULIEN-UT4M-50B-2026";
 let syncTimer=null,syncBusy=false,lastRemoteStamp=0;
 function syncSettings(){
-  try{return Object.assign({url:"",key:""},JSON.parse(localStorage.getItem(SYNC_SETTINGS_KEY)||"{}"))}catch(e){return{url:"",key:""}}
+  try{return Object.assign({url:DEFAULT_FIREBASE_URL,key:DEFAULT_SYNC_KEY},JSON.parse(localStorage.getItem(SYNC_SETTINGS_KEY)||"{}"))}catch(e){return{url:DEFAULT_FIREBASE_URL,key:DEFAULT_SYNC_KEY}}
 }
 function normalizeFirebaseUrl(url){return String(url||"").trim().replace(/\/+$/,"")}
 function safeSyncKey(key){return String(key||"").trim().replace(/[^a-zA-Z0-9_-]/g,"-").slice(0,100)}
@@ -175,7 +177,7 @@ function setSyncUi(state,text){
 }
 function currentSyncPayload(){
   const pos=currentPosition(),hist=healthHistory();
-  return {version:30,updatedAt:new Date().toISOString(),raceName:race().name,position:{km:pos.km,source:pos.source,updatedAt:pos.updatedAt||new Date().toISOString()},times:[...times],health:hist.slice(-20),start:race().start,goal:race().goal,trackingUrl:familySettings().tracking};
+  return {version:31,updatedAt:new Date().toISOString(),raceName:race().name,position:{km:pos.km,source:pos.source,updatedAt:pos.updatedAt||new Date().toISOString()},times:[...times],health:hist.slice(-20),start:race().start,goal:race().goal,trackingUrl:familySettings().tracking};
 }
 async function pushSync(silent=false){
   const ep=syncEndpoint();if(!ep)return false;
@@ -205,9 +207,11 @@ const _saveManualPositionV30=saveManualPosition;saveManualPosition=function(valu
 const _clearManualPositionV30=clearManualPosition;clearManualPosition=function(){_clearManualPositionV30();pushSync(true)};
 const _pointNextV30=pointNext;pointNext=function(){_pointNextV30();pushSync(true)};
 const _generateCloseMessageV30=generateCloseMessage;generateCloseMessage=function(){_generateCloseMessageV30();pushSync(true)};
-const _resetTimesV30=resetTimes;resetTimes=function(){_resetTimesV30();setTimeout(()=>pushSync(true),100)};
+const _resetTimesV30=resetTimes;resetTimes=function(){const before=JSON.stringify({times,health:healthHistory(),position:localStorage.getItem(manualPositionKey())});_resetTimesV30();const after=JSON.stringify({times,health:healthHistory(),position:localStorage.getItem(manualPositionKey())});if(before!==after)setTimeout(()=>pushSync(true),100)};
 function initSyncV30(){
-  const fromUrl=loadSyncFromUrl();fillSyncFields();
+  const fromUrl=loadSyncFromUrl();
+  if(!localStorage.getItem(SYNC_SETTINGS_KEY))localStorage.setItem(SYNC_SETTINGS_KEY,JSON.stringify({url:DEFAULT_FIREBASE_URL,key:DEFAULT_SYNC_KEY}));
+  fillSyncFields();
   if($("runnerSaveSyncBtn"))$("runnerSaveSyncBtn").onclick=saveRunnerSync;
   if($("familyConnectSyncBtn"))$("familyConnectSyncBtn").onclick=saveFamilySync;
   if($("runnerShareSyncBtn"))$("runnerShareSyncBtn").onclick=shareSyncLink;
@@ -217,7 +221,11 @@ function initSyncV30(){
   if($("resetBtn"))$("resetBtn").onclick=resetTimes;
   if($("useLastCheckpointBtn"))$("useLastCheckpointBtn").onclick=clearManualPosition;
   if(fromUrl){$("roleModal")?.classList.add("hidden");openFamilyMode()}
-  if(syncEndpoint())startSyncPolling();
+  if(syncEndpoint()){
+    const role=localStorage.getItem(ROLE_KEY);
+    if(role==="family"||fromUrl)startSyncPolling();
+    else pushSync(true).then(()=>startSyncPolling());
+  }
   document.addEventListener("visibilitychange",()=>{if(!document.hidden&&syncEndpoint())pullSync(true)});
 }
 initSyncV30();
