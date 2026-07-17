@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<header><div class="brand"><img src="icon.svg" alt=""><div><h1>Damiani Trail Tracker <span class="version">V35</span></h1><p>Course, stratégie et suivi des proches</p></div></div></header>
+<header><div class="brand"><img src="icon.svg" alt=""><div><h1>Damiani Trail Tracker <span class="version">V36</span></h1><p>Course, stratégie et suivi des proches</p></div></div></header>
 <main>
 <section id="homeHero" class="card hero-card">
   <div class="hero-badge">UT4M 50 BELLEDONNE · 18 JUILLET 2026</div>
@@ -154,7 +154,20 @@
   <button id="hardBtn" class="secondary race-hard-btn">🛡️ Je suis dans le dur</button><p id="hardAdvice" class="bad hidden"></p>
   <section class="race-messages-preview" aria-labelledby="raceMessagesTitle">
     <div class="message-card-head"><div><span class="race-eyebrow">MES PROCHES</span><h3 id="raceMessagesTitle">💬 Derniers messages</h3></div><span id="raceModeUnreadBadge" class="unread-badge hidden">0 nouveau</span></div>
-    <div id="raceModeMessagesList" class="messages-list race-mode-messages"></div>
+    <div id="raceModeMessagesList" class="messages-list race-mode-messages chat-thread"></div>
+    <div class="race-chat-quick" aria-label="Réponses rapides">
+      <button type="button" class="race-chat-quick-btn" data-reply="Tout va bien 👍">👍 Tout va bien</button>
+      <button type="button" class="race-chat-quick-btn" data-reply="Merci ❤️">❤️ Merci</button>
+      <button type="button" class="race-chat-quick-btn" data-reply="J’arrive bientôt au prochain point.">⛰️ J’arrive bientôt</button>
+      <button type="button" class="race-chat-quick-btn" data-reply="Je mange et je bois au prochain ravito.">🥤 Prochain ravito</button>
+      <button type="button" class="race-chat-quick-btn" data-reply="J’ai peu de réseau, mais tout va bien.">📶 Peu de réseau</button>
+      <button type="button" class="race-chat-quick-btn" data-reply="J’ai un peu de retard, ne vous inquiétez pas.">⏳ Un peu de retard</button>
+    </div>
+    <div class="race-chat-compose">
+      <textarea id="raceChatText" maxlength="300" rows="2" placeholder="Répondre simplement à mes proches…"></textarea>
+      <button id="raceChatSendBtn" type="button">Envoyer</button>
+    </div>
+    <div class="race-chat-footer"><span id="raceChatCount" class="small">0 / 300</span><span id="raceChatStatus" class="small"></span></div>
     <div class="share-row"><button id="raceRefreshMessagesBtn" class="secondary">↻ Actualiser</button><button id="raceMarkMessagesReadBtn" class="secondary">✓ Marquer comme lus</button></div>
   </section>
   <button id="closeRaceModeBtn" class="secondary race-back-btn">🔓 Déverrouiller et revenir au tableau complet</button>

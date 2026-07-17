@@ -1,4 +1,4 @@
-const COURSE_DATA_VERSION="2026-07-17-route-v7-firebase-messages-fix";
+const COURSE_DATA_VERSION="2026-07-17-route-v8-chat-express";
 const defaultRace={name:"UT4M 50 Belledonne",start:"08:00",goal:"08:15",version:COURSE_DATA_VERSION,notice:"Parcours modifié : passage par le col de Freydane supprimé en raison de névés persistants.",points:[{name:"Départ Rioupéroux",km:0,dp:0,dm:0,bh:"",w:0,nut:"Départ très calme. Bâtons prêts, manger et boire dès la première demi-heure."},{name:"Arselle",km:8.3,dp:1190,dm:105,bh:"11:30",w:0.225,nut:"Boire tôt. Gérer la montée sans ego et repartir sans perdre de temps."},{name:"Croix de Chamrousse",km:14.0,dp:1813,dm:117,bh:"13:15",w:0.405,nut:"Vrai ravitaillement : refaire les flasques et emporter assez de solide jusqu'à Pré Long."},{name:"Refuge de la Pra",km:20.6,dp:2150,dm:590,bh:"15:00",w:0.565,nut:"Point d’eau uniquement. Continuer à s’alimenter avec ce qui a été pris à Chamrousse."},{name:"Col de Pré Long",km:32.1,dp:2679,dm:2045,bh:"18:30",w:0.79,nut:"Secteur clé raccourci mais toujours exigeant. Manger même sans faim et protéger les quadriceps."},{name:"Villard-Bonnot",km:40.1,dp:2741,dm:3039,bh:"20:00",w:0.96,nut:"Fin de la longue descente. Relancer progressivement vers Le Versoud."},{name:"Arrivée Le Versoud",km:41.5,dp:2741,dm:3065,bh:"21:00",w:1,nut:"Dernier effort sur 1,4 km. Rester lucide jusqu’à l’arche."}]};
 let races=JSON.parse(localStorage.getItem("trail_races")||"null")||[defaultRace],active=Number(localStorage.getItem("trail_active")||0);
 // Mise à niveau automatique de l'ancien tracé UT4M, sans toucher aux autres courses créées.
@@ -240,7 +240,7 @@ function messagesEndpoint(){const ep=syncEndpoint();return ep?ep.replace(/\.json
 function normalizeRemoteMessages(raw){
   if(!raw)return[];
   const entries=Array.isArray(raw)?raw.map((v,i)=>[String(i),v]):Object.entries(raw);
-  return entries.filter(([,v])=>v&&typeof v==="object"&&String(v.text||"").trim()).map(([id,v])=>({id,author:String(v.author||"Un proche").slice(0,40),text:String(v.text||"").slice(0,300),createdAt:v.createdAt||new Date().toISOString()})).sort((a,b)=>(Date.parse(a.createdAt)||0)-(Date.parse(b.createdAt)||0)).slice(-50);
+  return entries.filter(([,v])=>v&&typeof v==="object"&&String(v.text||"").trim()).map(([id,v])=>({id,author:String(v.author||"Un proche").slice(0,40),text:String(v.text||"").slice(0,300),createdAt:v.createdAt||new Date().toISOString(),sender:v.sender==="runner"?"runner":"family"})).sort((a,b)=>(Date.parse(a.createdAt)||0)-(Date.parse(b.createdAt)||0)).slice(-80);
 }
 function formatMessageDate(iso){const d=new Date(iso);return Number.isNaN(d.getTime())?"Heure inconnue":d.toLocaleString("fr-FR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}
 function renderMessageList(containerId,limit=20,runner=false){
@@ -248,11 +248,11 @@ function renderMessageList(containerId,limit=20,runner=false){
   const list=remoteMessages.slice(-limit).reverse();box.innerHTML="";
   if(!list.length){const e=document.createElement("div");e.className="messages-empty";e.textContent=runner?"Aucun message reçu pour le moment.":"Aucun message envoyé pour le moment.";box.appendChild(e);return}
   const lastRead=Number(localStorage.getItem(MESSAGE_READ_KEY)||0);
-  list.forEach(m=>{const stamp=Date.parse(m.createdAt)||0,item=document.createElement("article");item.className="message-item"+(runner&&stamp>lastRead?" unread":"");const meta=document.createElement("div");meta.className="message-meta";const author=document.createElement("span");author.className="message-author";author.textContent=m.author;const date=document.createElement("span");date.textContent=formatMessageDate(m.createdAt);meta.append(author,date);const text=document.createElement("p");text.className="message-text";text.textContent=m.text;item.append(meta,text);box.appendChild(item)})
+  list.forEach(m=>{const stamp=Date.parse(m.createdAt)||0,item=document.createElement("article");const incomingForRunner=m.sender!=="runner";item.className="message-item chat-bubble "+(m.sender==="runner"?"from-runner":"from-family")+(runner&&incomingForRunner&&stamp>lastRead?" unread":"");const meta=document.createElement("div");meta.className="message-meta";const author=document.createElement("span");author.className="message-author";author.textContent=m.sender==="runner"?"Moi":m.author;const date=document.createElement("span");date.textContent=formatMessageDate(m.createdAt);meta.append(author,date);const text=document.createElement("p");text.className="message-text";text.textContent=m.text;item.append(meta,text);box.appendChild(item)})
 }
 function renderMessages(){
   renderMessageList("familyMessagesList",8,false);renderMessageList("runnerMessagesList",30,true);renderMessageList("raceModeMessagesList",3,true);
-  const badge=$("runnerUnreadBadge");if(badge){const lastRead=Number(localStorage.getItem(MESSAGE_READ_KEY)||0),n=remoteMessages.filter(m=>(Date.parse(m.createdAt)||0)>lastRead).length;badge.textContent=n+" nouveau"+(n>1?"x":"");badge.classList.toggle("hidden",!n);const rb=$("raceModeUnreadBadge");if(rb){rb.textContent=n+" nouveau"+(n>1?"x":"");rb.classList.toggle("hidden",!n)}}
+  const badge=$("runnerUnreadBadge");if(badge){const lastRead=Number(localStorage.getItem(MESSAGE_READ_KEY)||0),n=remoteMessages.filter(m=>m.sender!=="runner"&&(Date.parse(m.createdAt)||0)>lastRead).length;badge.textContent=n+" nouveau"+(n>1?"x":"");badge.classList.toggle("hidden",!n);const rb=$("raceModeUnreadBadge");if(rb){rb.textContent=n+" nouveau"+(n>1?"x":"");rb.classList.toggle("hidden",!n)}}
 }
 async function sendFamilyMessage(){
   const author=String($("familySenderName")?.value||"").trim().slice(0,40);
@@ -267,7 +267,7 @@ async function sendFamilyMessage(){
   const createdAt=new Date().toISOString();
   const id="msg_"+Date.now()+"_"+Math.random().toString(36).slice(2,8);
   const payload={updatedAt:createdAt};
-  payload["messages/"+id]={author,text,createdAt};
+  payload["messages/"+id]={author,text,createdAt,sender:"family"};
   try{
     const r=await fetch(ep,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
     if(!r.ok){const detail=await r.text().catch(()=>"");throw new Error("HTTP "+r.status+(detail?" · "+detail:""))}
@@ -364,3 +364,37 @@ if(v353BackButton){
   v353BackButton.onclick=null;
   v353BackButton.addEventListener("click",v353ExitRaceMode);
 }
+
+// ===== V36 · Chat express bidirectionnel en mode Course =====
+async function sendRunnerChatMessage(prefill){
+  const input=$("raceChatText"),status=$("raceChatStatus");
+  const text=String(prefill??input?.value??"").trim().slice(0,300);
+  const ep=syncEndpoint();
+  if(!text){if(input)input.focus();return}
+  if(!ep){alert("Active d’abord la synchronisation avec tes proches.");return}
+  if(!navigator.onLine){if(status)status.textContent="Message non envoyé : pas de réseau.";v35Toast("📴 Le chat nécessite momentanément du réseau.");return}
+  const createdAt=new Date().toISOString();
+  const id="runner_"+Date.now()+"_"+Math.random().toString(36).slice(2,8);
+  const payload={updatedAt:createdAt};
+  payload["messages/"+id]={author:"Julien",text,createdAt,sender:"runner"};
+  if(status)status.textContent="Envoi…";
+  try{
+    const r=await fetch(ep,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
+    if(!r.ok)throw new Error("HTTP "+r.status);
+    if(input){input.value="";input.dispatchEvent(new Event("input"))}
+    if(status)status.textContent="Envoyé";
+    await pullSync(true);
+    markMessagesRead();
+    setTimeout(()=>{if(status)status.textContent=""},2500);
+  }catch(e){if(status)status.textContent="Échec de l’envoi";alert("Le message n’a pas pu être envoyé. Vérifie la connexion et les règles Firebase.")}
+}
+function initRaceChatV36(){
+  const input=$("raceChatText");
+  if(input){
+    input.addEventListener("input",()=>{$("raceChatCount").textContent=Math.min(300,input.value.length)+" / 300"});
+    input.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendRunnerChatMessage()}});
+  }
+  $("raceChatSendBtn")?.addEventListener("click",()=>sendRunnerChatMessage());
+  document.querySelectorAll(".race-chat-quick-btn").forEach(b=>b.addEventListener("click",()=>sendRunnerChatMessage(b.dataset.reply||"")));
+}
+initRaceChatV36();
