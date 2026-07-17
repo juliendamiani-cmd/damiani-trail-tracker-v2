@@ -137,7 +137,28 @@
 <div class="grid"><p><b id="missionDistance">--</b><br><span class="small">distance secteur</span></p><p><b id="missionElevation">--</b><br><span class="small">D+ / D- secteur</span></p></div>
 <p id="missionTime" class="huge"></p><p id="missionAdvice" class="small"></p></section>
 
-<section id="raceMode" class="card hidden"><h2>⚔️ Mode course</h2><div id="currentSector" class="big"></div><p id="currentInfos"></p><p id="currentTarget" class="huge"></p><p id="currentBarrier"></p><p id="currentMargin"></p><p id="currentNutrition" class="small"></p><button id="pointNextBtn">Je viens d'arriver</button><button id="hardBtn" class="secondary">Je suis dans le dur</button><p id="hardAdvice" class="bad hidden"></p><button id="closeRaceModeBtn" class="secondary">Retour complet</button></section>
+<section id="raceMode" class="card hidden race-cockpit">
+  <div class="race-cockpit-head"><div><span class="race-eyebrow">MODE COURSE</span><h2>Prochaine étape</h2></div><span id="raceCockpitSync" class="race-sync-pill">● Local</span></div>
+  <div class="next-stage-card">
+    <div id="currentSector" class="race-next-name"></div>
+    <div class="race-essential-grid">
+      <div><strong id="raceNextDistance">--</strong><span>distance</span></div>
+      <div><strong id="raceNextElevation">--</strong><span>D+ / D−</span></div>
+      <div><strong id="raceNextEta">--</strong><span>passage prévu</span></div>
+    </div>
+    <p id="currentInfos" class="race-secondary-info"></p>
+    <div class="race-time-row"><p id="currentTarget" class="race-target"></p><div><p id="currentBarrier"></p><p id="currentMargin"></p></div></div>
+    <div class="race-nutrition"><b>🥤 À faire maintenant</b><p id="currentNutrition"></p></div>
+  </div>
+  <div class="race-primary-actions"><button id="pointNextBtn">✅ Je viens d’arriver</button><button id="raceShareStateBtn" class="secondary">📣 Donner de mes nouvelles</button></div>
+  <button id="hardBtn" class="secondary race-hard-btn">🛡️ Je suis dans le dur</button><p id="hardAdvice" class="bad hidden"></p>
+  <section class="race-messages-preview" aria-labelledby="raceMessagesTitle">
+    <div class="message-card-head"><div><span class="race-eyebrow">MES PROCHES</span><h3 id="raceMessagesTitle">💬 Derniers messages</h3></div><span id="raceModeUnreadBadge" class="unread-badge hidden">0 nouveau</span></div>
+    <div id="raceModeMessagesList" class="messages-list race-mode-messages"></div>
+    <div class="share-row"><button id="raceRefreshMessagesBtn" class="secondary">↻ Actualiser</button><button id="raceMarkMessagesReadBtn" class="secondary">✓ Marquer comme lus</button></div>
+  </section>
+  <button id="closeRaceModeBtn" class="secondary race-back-btn">Retour au tableau complet</button>
+</section>
 
 <section class="card"><h2>Frise de course</h2><div id="mentalMap"></div></section>
 
