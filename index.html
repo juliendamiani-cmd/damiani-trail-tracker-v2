@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Damiani Trail Tracker V32</title>
+<title>Damiani Trail Tracker V34</title>
 <meta name="theme-color" content="#d8a733">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<header><div class="brand"><img src="icon.svg" alt=""><div><h1>Damiani Trail Tracker <span class="version">V32</span></h1><p>Course, stratégie et suivi des proches</p></div></div></header>
+<header><div class="brand"><img src="icon.svg" alt=""><div><h1>Damiani Trail Tracker <span class="version">V34</span></h1><p>Course, stratégie et suivi des proches</p></div></div></header>
 <main>
 <section id="homeHero" class="card hero-card">
   <div class="hero-badge">UT4M 50 BELLEDONNE · 18 JUILLET 2026</div>
@@ -24,7 +24,7 @@
 <section id="familyDashboard" class="card family-dashboard hidden">
   <div class="family-head">
     <div><span class="eyebrow">MODE PROCHES</span><h2>Suivre Julien simplement</h2></div>
-    <button id="familyExitBtn" class="icon-btn" aria-label="Quitter le mode proches">✕</button>
+    <button id="familyExitBtn" class="icon-btn family-advanced" aria-label="Quitter le mode proches">✕</button>
   </div>
   <div id="familyStatusCard" class="family-status"></div>
   <h3>Profil de la course</h3>
@@ -57,7 +57,7 @@
   <div id="spectatorPoints" class="spectator-grid"></div>
   <h3>📞 Contacts rapides</h3>
   <div id="contactButtons" class="contact-grid"></div>
-  <details class="settings-box"><summary>Configurer les contacts et les liens</summary>
+  <details class="settings-box family-advanced"><summary>Configurer les contacts et les liens</summary>
     <label>Téléphone de Julien</label><input id="contactJulien" type="tel" placeholder="06…">
     <label>Téléphone de Maroussia</label><input id="contactMaroussia" type="tel" placeholder="06…">
     <label>Téléphone organisation UT4M</label><input id="contactUt4m" type="tel" placeholder="Numéro organisation">
@@ -65,14 +65,14 @@
     <button id="saveFamilySettingsBtn">Enregistrer</button>
   </details>
 
-  <details class="settings-box sync-box" id="familySyncBox"><summary>Synchronisation en direct</summary>
+  <details class="settings-box sync-box family-advanced" id="familySyncBox"><summary>Synchronisation en direct</summary>
     <p class="small">Le Mode Proches récupère automatiquement la dernière position publiée par Julien.</p>
     <div id="familySyncStatus" class="sync-status">Non connecté</div>
     <label>Adresse Firebase Realtime Database</label><input id="familyFirebaseUrl" type="url" value="https://damiani-trail-tracker-default-rtdb.europe-west1.firebasedatabase.app">
     <label>Code de suivi</label><input id="familySyncKey" type="text" placeholder="Code partagé par Julien">
     <button id="familyConnectSyncBtn">Connecter le suivi</button>
   </details>
-  <div class="share-row"><button id="shareAppBtn" class="secondary">Partager l’application</button><button id="copyFamilySummaryBtn" class="secondary">Copier le résumé</button></div>
+  <div class="share-row"><button id="shareAppBtn" class="secondary">Partager ce suivi</button><button id="copyFamilySummaryBtn" class="secondary">Copier le résumé</button></div>
 </section>
 
 <section class="card">
@@ -97,7 +97,9 @@
   <details class="settings-box" id="runnerSyncBox"><summary>Configurer la synchronisation</summary>
     <label>Adresse Firebase Realtime Database</label><input id="runnerFirebaseUrl" type="url" value="https://damiani-trail-tracker-default-rtdb.europe-west1.firebasedatabase.app">
     <label>Code secret de suivi</label><input id="runnerSyncKey" type="text" value="JULIEN-UT4M-50B-2026">
-    <div class="share-row"><button id="runnerSaveSyncBtn">Activer la synchronisation</button><button id="runnerShareSyncBtn" class="secondary">Partager le lien proches</button></div>
+    <div class="share-row"><button id="runnerSaveSyncBtn">Activer la synchronisation</button><button id="runnerShareSyncBtn" class="secondary">Copier le lien proches</button></div>
+    <button id="inviteFamilyBtn" class="invite-family-btn">❤️ Inviter mes proches</button>
+    <p class="small invite-help">Un seul clic leur suffira : le lien ouvrira automatiquement l’application en mode Proches et mémorisera le code de suivi.</p>
     <p class="small">Firebase doit autoriser temporairement les lectures et écritures. Un guide est inclus dans le ZIP.</p>
   </details>
 </div>
