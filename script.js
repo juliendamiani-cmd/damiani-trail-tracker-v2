@@ -312,7 +312,7 @@ const v34PullSync=pullSync;
 pullSync=async function(silent=true){const ok=await v34PullSync(silent);if(!ok)v35Freshness(null);return ok};
 function v35StartAdaptivePolling(){if(syncTimer)clearInterval(syncTimer);if(!syncEndpoint())return;pullSync(true);const tick=()=>{if(!syncBusy)pullSync(true);syncTimer=setTimeout(tick,document.hidden?60000:10000)};syncTimer=setTimeout(tick,10000)}
 startSyncPolling=v35StartAdaptivePolling;
-function v35SetLocked(locked){localStorage.setItem(V35_LOCK_KEY,locked?"1":"0");document.body.classList.toggle("race-locked",locked);const b=$("raceLockBtn");if(b)b.textContent=locked?"🔓 Maintenir pour déverrouiller":"🔒 Verrouiller le mode course";if(locked){$("raceMode")?.classList.remove("hidden");v35Toast("🔒 Mode course verrouillé : les réglages sensibles sont masqués.")}else v35Toast("🔓 Mode course déverrouillé.")}
+function v35SetLocked(locked){localStorage.setItem(V35_LOCK_KEY,locked?"1":"0");document.body.classList.toggle("race-locked",locked);const b=$("raceLockBtn");if(b)b.textContent=locked?"🔓 Maintenir pour déverrouiller":"🔒 Verrouiller le mode course";const back=$("closeRaceModeBtn");if(back)back.textContent=locked?"🔓 Déverrouiller et revenir au tableau complet":"← Retour au tableau complet";if(locked){$("raceMode")?.classList.remove("hidden");v35Toast("🔒 Mode course verrouillé : les réglages sensibles sont masqués.")}else v35Toast("🔓 Mode course déverrouillé.")}
 function v35InitLock(){const b=$("raceLockBtn");if(!b)return;v35SetLocked(localStorage.getItem(V35_LOCK_KEY)==="1");let timer=null;const start=()=>{timer=setTimeout(()=>v35SetLocked(!(localStorage.getItem(V35_LOCK_KEY)==="1")),1200)};const cancel=()=>{if(timer){clearTimeout(timer);timer=null}};b.addEventListener("pointerdown",start);b.addEventListener("pointerup",cancel);b.addEventListener("pointerleave",cancel);b.addEventListener("click",()=>{if(localStorage.getItem(V35_LOCK_KEY)!=="1")v35SetLocked(true)})}
 async function v35DeleteRemoteData(){const ep=syncEndpoint();if(!ep)return alert("La synchronisation n’est pas configurée.");if(!confirm("Supprimer définitivement les positions, états et messages stockés en ligne pour ce code de suivi ?"))return;try{const r=await fetch(ep,{method:"DELETE"});if(!r.ok)throw new Error(`HTTP ${r.status}`);localStorage.removeItem(V35_PENDING_KEY);alert("Les données distantes ont été supprimées.")}catch(e){alert("Suppression impossible. Vérifie la connexion et les règles Firebase.")}}
 function v35InitUi(){
@@ -333,3 +333,14 @@ v35InitUi();
 // V35.1 · état réseau dans le cockpit course
 function v351UpdateRaceSync(){const el=$("raceCockpitSync");if(!el)return;const pending=!!localStorage.getItem(V35_PENDING_KEY);if(pending){el.className="race-sync-pill pending";el.textContent="● En attente"}else if(navigator.onLine&&syncEndpoint()){el.className="race-sync-pill online";el.textContent="● Synchronisé"}else if(navigator.onLine){el.className="race-sync-pill";el.textContent="● Local"}else{el.className="race-sync-pill offline";el.textContent="● Hors réseau"}}
 window.addEventListener("online",v351UpdateRaceSync);window.addEventListener("offline",v351UpdateRaceSync);setInterval(v351UpdateRaceSync,5000);v351UpdateRaceSync();
+
+// V35.2 · sortie de secours toujours accessible depuis le mode Course
+function v352ExitRaceMode(){
+  const locked=localStorage.getItem(V35_LOCK_KEY)==="1";
+  if(locked&&!confirm("Déverrouiller le mode course et revenir au tableau complet ?"))return;
+  if(locked)v35SetLocked(false);
+  $("raceMode")?.classList.add("hidden");
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+const v352BackButton=$("closeRaceModeBtn");
+if(v352BackButton)v352BackButton.onclick=v352ExitRaceMode;
