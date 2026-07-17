@@ -1,4 +1,4 @@
-DAMIANI TRAIL TRACKER V34 — ACCÈS PROCHES EN UN CLIC
+DAMIANI TRAIL TRACKER V35 — SUIVI ROBUSTE ET HORS CONNEXION
 
 La base Firebase du projet est préconfigurée.
 Code de suivi par défaut : JULIEN-UT4M-50B-2026
@@ -15,7 +15,7 @@ UTILISATION PROCHES
 3. Le code de suivi est mémorisé sur l’appareil.
 4. Les données sont actualisées automatiquement environ toutes les 5 secondes.
 
-NOUVEAUTÉS V34
+ACQUIS CONSERVÉS DE LA V34
 - Lien simplifié au format ?suivi=CODE.
 - Ouverture automatique en mode Proches.
 - Mémorisation locale du code de suivi.

@@ -293,3 +293,36 @@ function initMessagesV32(){
 }
 const _applyRemotePayloadV32=applyRemotePayload;applyRemotePayload=function(data){if(data&&data.messages)remoteMessages=normalizeRemoteMessages(data.messages);else if(data&&!data.messages)remoteMessages=[];const changed=_applyRemotePayloadV32(data);renderMessages();return changed};
 initMessagesV32();
+
+// ===== V35 · hors ligne, fraîcheur, ergonomie Proches et verrouillage course =====
+const V35_PENDING_KEY="dtt_pending_sync_v35";
+const V35_LOCK_KEY="dtt_race_lock_v35";
+let v35LastRemoteAt=0;
+function v35Toast(text,delay=3500){const el=$("offlineToast");if(!el)return;el.textContent=text;el.classList.remove("hidden");clearTimeout(v35Toast.timer);v35Toast.timer=setTimeout(()=>el.classList.add("hidden"),delay)}
+function v35QueuePayload(payload){localStorage.setItem(V35_PENDING_KEY,JSON.stringify(payload||currentSyncPayload()));setSyncUi("pending","Enregistré sur le téléphone · en attente d’envoi");$("runnerSyncIndicator")?.classList.add("pending-sync");v35Toast("☁️ Données sauvegardées hors ligne. Envoi automatique au retour du réseau.")}
+async function v35FlushQueue(){const raw=localStorage.getItem(V35_PENDING_KEY),ep=syncEndpoint();if(!raw||!ep||!navigator.onLine)return false;try{const r=await fetch(ep,{method:"PATCH",headers:{"Content-Type":"application/json"},body:raw});if(!r.ok)throw new Error();localStorage.removeItem(V35_PENDING_KEY);$("runnerSyncIndicator")?.classList.remove("pending-sync");setSyncUi("online","Synchronisé à "+now());v35Toast("✅ Données hors ligne envoyées aux proches.");return true}catch(e){return false}}
+const v34PushSync=pushSync;
+pushSync=async function(silent=false){if(!navigator.onLine){v35QueuePayload(currentSyncPayload());return false}const ok=await v34PushSync(silent);if(!ok)v35QueuePayload(currentSyncPayload());else localStorage.removeItem(V35_PENDING_KEY);return ok};
+const v34CurrentSyncPayload=currentSyncPayload;
+currentSyncPayload=function(){const p=v34CurrentSyncPayload();p.version=35;p.connection={online:navigator.onLine,publishedAt:new Date().toISOString()};return p};
+function v35Freshness(iso){const box=$("familyFreshness");if(!box)return;const stamp=Date.parse(iso||"")||v35LastRemoteAt;if(!stamp){box.className="freshness-banner stale";box.textContent="Aucune donnée reçue pour le moment.";return}const mins=Math.max(0,Math.floor((Date.now()-stamp)/60000));box.className="freshness-banner "+(mins<2?"live":mins<=10?"recent":"stale");box.textContent=mins<2?"🟢 En direct · mise à jour il y a moins de 2 min":mins<=10?`🟡 Mise à jour récente · il y a ${mins} min`:`🔴 Données anciennes · dernière mise à jour il y a ${mins} min`}
+const v34ApplyRemotePayload=applyRemotePayload;
+applyRemotePayload=function(data){if(data?.updatedAt)v35LastRemoteAt=Date.parse(data.updatedAt)||0;const out=v34ApplyRemotePayload(data);v35Freshness(data?.updatedAt);return out};
+const v34PullSync=pullSync;
+pullSync=async function(silent=true){const ok=await v34PullSync(silent);if(!ok)v35Freshness(null);return ok};
+function v35StartAdaptivePolling(){if(syncTimer)clearInterval(syncTimer);if(!syncEndpoint())return;pullSync(true);const tick=()=>{if(!syncBusy)pullSync(true);syncTimer=setTimeout(tick,document.hidden?60000:10000)};syncTimer=setTimeout(tick,10000)}
+startSyncPolling=v35StartAdaptivePolling;
+function v35SetLocked(locked){localStorage.setItem(V35_LOCK_KEY,locked?"1":"0");document.body.classList.toggle("race-locked",locked);const b=$("raceLockBtn");if(b)b.textContent=locked?"🔓 Maintenir pour déverrouiller":"🔒 Verrouiller le mode course";if(locked){$("raceMode")?.classList.remove("hidden");v35Toast("🔒 Mode course verrouillé : les réglages sensibles sont masqués.")}else v35Toast("🔓 Mode course déverrouillé.")}
+function v35InitLock(){const b=$("raceLockBtn");if(!b)return;v35SetLocked(localStorage.getItem(V35_LOCK_KEY)==="1");let timer=null;const start=()=>{timer=setTimeout(()=>v35SetLocked(!(localStorage.getItem(V35_LOCK_KEY)==="1")),1200)};const cancel=()=>{if(timer){clearTimeout(timer);timer=null}};b.addEventListener("pointerdown",start);b.addEventListener("pointerup",cancel);b.addEventListener("pointerleave",cancel);b.addEventListener("click",()=>{if(localStorage.getItem(V35_LOCK_KEY)!=="1")v35SetLocked(true)})}
+async function v35DeleteRemoteData(){const ep=syncEndpoint();if(!ep)return alert("La synchronisation n’est pas configurée.");if(!confirm("Supprimer définitivement les positions, états et messages stockés en ligne pour ce code de suivi ?"))return;try{const r=await fetch(ep,{method:"DELETE"});if(!r.ok)throw new Error(`HTTP ${r.status}`);localStorage.removeItem(V35_PENDING_KEY);alert("Les données distantes ont été supprimées.")}catch(e){alert("Suppression impossible. Vérifie la connexion et les règles Firebase.")}}
+function v35InitUi(){
+  document.querySelectorAll(".quick-message").forEach(b=>b.addEventListener("click",()=>{const t=$("familyMessageText");t.value=b.dataset.message||"";t.dispatchEvent(new Event("input"));t.focus()}));
+  document.querySelectorAll(".family-jump").forEach(b=>b.addEventListener("click",()=>{$(b.dataset.target)?.scrollIntoView({behavior:"smooth",block:"start"})}));
+  $("deleteRemoteDataBtn")?.addEventListener("click",v35DeleteRemoteData);
+  v35InitLock();v35Freshness(null);
+  window.addEventListener("online",()=>{v35Toast("📶 Connexion retrouvée.");v35FlushQueue().then(()=>pullSync(true))});
+  window.addEventListener("offline",()=>v35Toast("📴 Hors connexion : l’application reste utilisable."));
+  document.addEventListener("visibilitychange",()=>{if(!document.hidden){v35FlushQueue();pullSync(true)}});
+  if(localStorage.getItem(V35_PENDING_KEY))v35FlushQueue();
+}
+v35InitUi();
