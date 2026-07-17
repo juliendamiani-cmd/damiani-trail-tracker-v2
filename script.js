@@ -1,4 +1,4 @@
-const COURSE_DATA_VERSION="2026-07-17-route-v6-firebase-messages";
+const COURSE_DATA_VERSION="2026-07-17-route-v7-firebase-messages-fix";
 const defaultRace={name:"UT4M 50 Belledonne",start:"08:00",goal:"08:15",version:COURSE_DATA_VERSION,notice:"Parcours modifié : passage par le col de Freydane supprimé en raison de névés persistants.",points:[{name:"Départ Rioupéroux",km:0,dp:0,dm:0,bh:"",w:0,nut:"Départ très calme. Bâtons prêts, manger et boire dès la première demi-heure."},{name:"Arselle",km:8.3,dp:1190,dm:105,bh:"11:30",w:0.225,nut:"Boire tôt. Gérer la montée sans ego et repartir sans perdre de temps."},{name:"Croix de Chamrousse",km:14.0,dp:1813,dm:117,bh:"13:15",w:0.405,nut:"Vrai ravitaillement : refaire les flasques et emporter assez de solide jusqu'à Pré Long."},{name:"Refuge de la Pra",km:20.6,dp:2150,dm:590,bh:"15:00",w:0.565,nut:"Point d’eau uniquement. Continuer à s’alimenter avec ce qui a été pris à Chamrousse."},{name:"Col de Pré Long",km:32.1,dp:2679,dm:2045,bh:"18:30",w:0.79,nut:"Secteur clé raccourci mais toujours exigeant. Manger même sans faim et protéger les quadriceps."},{name:"Villard-Bonnot",km:40.1,dp:2741,dm:3039,bh:"20:00",w:0.96,nut:"Fin de la longue descente. Relancer progressivement vers Le Versoud."},{name:"Arrivée Le Versoud",km:41.5,dp:2741,dm:3065,bh:"21:00",w:1,nut:"Dernier effort sur 1,4 km. Rester lucide jusqu’à l’arche."}]};
 let races=JSON.parse(localStorage.getItem("trail_races")||"null")||[defaultRace],active=Number(localStorage.getItem("trail_active")||0);
 // Mise à niveau automatique de l'ancien tracé UT4M, sans toucher aux autres courses créées.
@@ -254,10 +254,31 @@ function renderMessages(){
   const badge=$("runnerUnreadBadge");if(badge){const lastRead=Number(localStorage.getItem(MESSAGE_READ_KEY)||0),n=remoteMessages.filter(m=>(Date.parse(m.createdAt)||0)>lastRead).length;badge.textContent=n+" nouveau"+(n>1?"x":"");badge.classList.toggle("hidden",!n)}
 }
 async function sendFamilyMessage(){
-  const author=String($("familySenderName")?.value||"").trim().slice(0,40),text=String($("familyMessageText")?.value||"").trim().slice(0,300),status=$("familyMessageSendStatus"),ep=messagesEndpoint();
-  if(!author){alert("Indique ton prénom.");$("familySenderName")?.focus();return}if(!text){alert("Écris un message avant de l’envoyer.");$("familyMessageText")?.focus();return}if(!ep){alert("Le suivi en direct n’est pas connecté.");return}
-  localStorage.setItem(MESSAGE_NAME_KEY,author);if(status)status.textContent="Envoi…";
-  try{const r=await fetch(ep,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({author,text,createdAt:new Date().toISOString()})});if(!r.ok)throw new Error("HTTP "+r.status);$("familyMessageText").value="";$("familyMessageCount").textContent="0 / 300";if(status)status.textContent="Message envoyé à Julien.";await pullSync(true)}catch(e){if(status)status.textContent="Échec de l’envoi. Vérifie la connexion.";alert("Le message n’a pas pu être envoyé.")}
+  const author=String($("familySenderName")?.value||"").trim().slice(0,40);
+  const text=String($("familyMessageText")?.value||"").trim().slice(0,300);
+  const status=$("familyMessageSendStatus");
+  const ep=syncEndpoint();
+  if(!author){alert("Indique ton prénom.");$("familySenderName")?.focus();return}
+  if(!text){alert("Écris un message avant de l’envoyer.");$("familyMessageText")?.focus();return}
+  if(!ep){alert("Le suivi en direct n’est pas connecté.");return}
+  localStorage.setItem(MESSAGE_NAME_KEY,author);
+  if(status)status.textContent="Envoi…";
+  const createdAt=new Date().toISOString();
+  const id="msg_"+Date.now()+"_"+Math.random().toString(36).slice(2,8);
+  const payload={updatedAt:createdAt};
+  payload["messages/"+id]={author,text,createdAt};
+  try{
+    const r=await fetch(ep,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
+    if(!r.ok){const detail=await r.text().catch(()=>"");throw new Error("HTTP "+r.status+(detail?" · "+detail:""))}
+    $("familyMessageText").value="";
+    $("familyMessageCount").textContent="0 / 300";
+    if(status)status.textContent="Message envoyé à Julien.";
+    await pullSync(true);
+  }catch(e){
+    console.error("Erreur envoi message",e);
+    if(status)status.textContent="Échec de l’envoi : "+e.message;
+    alert("Le message n’a pas pu être envoyé. Vérifie Internet et les règles Firebase.\n\nDétail : "+e.message);
+  }
 }
 function markMessagesRead(){localStorage.setItem(MESSAGE_READ_KEY,String(Date.now()));renderMessages()}
 async function clearRemoteMessages(silent=false){const ep=messagesEndpoint();if(!ep)return;try{await fetch(ep,{method:"DELETE"});remoteMessages=[];renderMessages()}catch(e){if(!silent)alert("Impossible de supprimer les messages distants.")}}

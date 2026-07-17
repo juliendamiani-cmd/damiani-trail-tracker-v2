@@ -1,4 +1,4 @@
-DAMIANI TRAIL TRACKER V32 — SUIVI EN DIRECT CONFIGURÉ
+DAMIANI TRAIL TRACKER V33 — SUIVI EN DIRECT CONFIGURÉ
 
 La base Firebase du projet Damiani Trail Tracker est déjà renseignée dans cette version.
 Code de suivi : JULIEN-UT4M-50B-2026
@@ -31,3 +31,7 @@ MESSAGERIE V32
 
 IMPORTANT
 Les règles actuelles autorisent publiquement la lecture et l’écriture. Ne partagez le lien de suivi qu’avec des personnes de confiance. Après la course, désactivez les règles publiques ou supprimez la base.
+
+
+CORRECTIF V33
+L’envoi des messages utilise désormais une écriture PATCH sur le suivi principal, ce qui met aussi à jour l’horodatage global. Cela garantit la détection immédiate du message sur le téléphone du coureur.
