@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<header><div class="brand"><img src="icon.svg" alt=""><div><h1>Damiani Trail Tracker <span class="version">V27</span></h1><p>Course, stratégie et suivi des proches</p></div></div></header>
+<header><div class="brand"><img src="icon.svg" alt=""><div><h1>Damiani Trail Tracker <span class="version">V28</span></h1><p>Course, stratégie et suivi des proches</p></div></div></header>
 <main>
 <section id="homeHero" class="card hero-card">
   <div class="hero-badge">UT4M 50 BELLEDONNE · 18 JUILLET 2026</div>
@@ -27,6 +27,8 @@
     <button id="familyExitBtn" class="icon-btn" aria-label="Quitter le mode proches">✕</button>
   </div>
   <div id="familyStatusCard" class="family-status"></div>
+  <h3>Profil de la course</h3>
+  <div id="familyElevationProfile" class="elevation-wrap"></div>
   <h3>Dernières nouvelles de Julien</h3>
   <div id="familyHealthUpdate" class="family-health-update"></div>
   <details id="familyHealthHistoryBox" class="settings-box"><summary>Voir les mises à jour précédentes</summary><div id="familyHealthHistory"></div></details>
@@ -58,6 +60,11 @@
 <div class="progress"><div id="progressBar"></div></div><p id="progressText" class="small"></p><p id="routeNotice" class="warn hidden"></p>
 <button id="raceModeBtn">🏃 Mode course</button><button id="closeModeBtn" class="secondary">📣 Partager mon état</button><button id="editorBtn" class="secondary">Créer / modifier une course</button><button id="restoreBtn" class="secondary">Restaurer UT4M Belledonne</button><button id="resetBtn" class="danger">Réinitialiser la course</button>
 </section>
+
+<section class="card elevation-card"><h2>Profil altimétrique</h2>
+<div id="runnerElevationProfile" class="elevation-wrap"></div>
+<div id="elevationPositionInfo" class="elevation-position-info"></div>
+<p class="small">La position est calculée à partir de ton dernier pointage enregistré dans l’application.</p></section>
 
 <section class="card"><h2>Tableau de bord progression</h2>
 <div class="kpi"><div><b id="progressPercent">--</b><span>progression</span></div><div><b id="remainingKm">--</b><span>km restants</span></div><div><b id="remainingTime">--</b><span>temps restant</span></div></div>
