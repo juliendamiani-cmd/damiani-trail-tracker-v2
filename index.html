@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Damiani Trail Tracker V26</title>
+<title>Damiani Trail Tracker V27</title>
 <meta name="theme-color" content="#d8a733">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<header><div class="brand"><img src="icon.svg" alt=""><div><h1>Damiani Trail Tracker <span class="version">V26</span></h1><p>Course, stratégie et suivi des proches</p></div></div></header>
+<header><div class="brand"><img src="icon.svg" alt=""><div><h1>Damiani Trail Tracker <span class="version">V27</span></h1><p>Course, stratégie et suivi des proches</p></div></div></header>
 <main>
 <section id="homeHero" class="card hero-card">
   <div class="hero-badge">UT4M 50 BELLEDONNE · 18 JUILLET 2026</div>
@@ -56,7 +56,7 @@
 <div class="grid"><div><label>Heure de départ</label><input id="startTime" type="time"></div><div><label>Objectif total</label><input id="goalTime" placeholder="08:15"></div></div>
 <div class="kpi"><div><b id="targetFinish">--</b><span>objectif</span></div><div><b id="projectedFinish">--</b><span>projection</span></div><div><b id="raceStatus">--</b><span>statut</span></div></div>
 <div class="progress"><div id="progressBar"></div></div><p id="progressText" class="small"></p><p id="routeNotice" class="warn hidden"></p>
-<button id="raceModeBtn">🏃 Mode course</button><button id="closeModeBtn" class="secondary">📣 Partager mon état</button><button id="editorBtn" class="secondary">Créer / modifier une course</button><button id="restoreBtn" class="secondary">Restaurer UT4M Belledonne</button><button id="resetBtn" class="danger">Effacer les pointages</button>
+<button id="raceModeBtn">🏃 Mode course</button><button id="closeModeBtn" class="secondary">📣 Partager mon état</button><button id="editorBtn" class="secondary">Créer / modifier une course</button><button id="restoreBtn" class="secondary">Restaurer UT4M Belledonne</button><button id="resetBtn" class="danger">Réinitialiser la course</button>
 </section>
 
 <section class="card"><h2>Tableau de bord progression</h2>
@@ -100,8 +100,7 @@
 <div id="closeHistory" class="small"></div>
 </div></section>
 
-<section class="card"><h2>État du moment</h2><div class="grid"><div><label>Énergie /5</label><input id="energy" type="number" min="1" max="5" value="4"></div><div><label>Moral /5</label><input id="moral" type="number" min="1" max="5" value="4"></div></div>
-<label>Hydratation</label><select id="hydration"><option>OK</option><option>Moyen</option><option>Mauvais</option></select><label>Nutrition</label><select id="nutrition"><option>OK</option><option>Moyen</option><option>Mauvais</option></select><button id="saveStateBtn">Enregistrer l'état</button><div id="stateAlert"></div><div id="stateHistory" class="small"></div></section>
+
 
 
 <section id="editor" class="card hidden"><h2>Créer / modifier une course</h2><label>Nom de la course</label><input id="editName"><p class="small">Format : nom;km cumulés;D+ cumulé;D- cumulé;barrière;nutrition;poids projection</p><textarea id="editData"></textarea><button id="saveRaceBtn">Sauvegarder cette course</button><button id="duplicateBtn" class="secondary">Dupliquer la course active</button><button id="deleteBtn" class="danger">Supprimer la course active</button><label>Exporter / importer</label><textarea id="importExport"></textarea><button id="exportBtn" class="secondary">Exporter mes courses</button><button id="importBtn" class="secondary">Importer</button></section>
